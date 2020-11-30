@@ -2,19 +2,25 @@ const express = require('express')
 const bookRouter = express.Router()
 const { v4: uuid } = require('uuid')
 const jsonParser = express.json()
+const BookmarksService = require('./bookmarks-service')
 
-let bookmarks = [{
-    id: "1",
-    title: "The Odessey",
-    content: "Greek tragedy",
-    url: "www.test.com",
-    rating: 4
-}]
+// let bookmarks = [{
+//     id: "1",
+//     title: "The Odessey",
+//     content: "Greek tragedy",
+//     url: "www.test.com",
+//     rating: 4
+// }]
 
 bookRouter
     .route('/')
-    .get((req, res) => {
-        res.json(bookmarks)
+    .get((req, res, next) => {
+        const knexInstance = req.app.get('db')   
+        BookmarksService.getAllBookmarks(knexInstance)
+            .then(bookmarks => {
+                res.json(bookmarks)
+            })
+            .catch(next)
     })
     .post(jsonParser, (req, res) => {
         // app.use(express.json())
