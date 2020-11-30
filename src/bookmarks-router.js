@@ -13,9 +13,9 @@ const BookmarksService = require('./bookmarks-service')
 // }]
 
 bookRouter
-    .route('/')
+    .route('/bookmarks')
     .get((req, res, next) => {
-        const knexInstance = req.app.get('db')   
+        const knexInstance = req.app.get('db')
         BookmarksService.getAllBookmarks(knexInstance)
             .then(bookmarks => {
                 res.json(bookmarks)
@@ -94,13 +94,14 @@ bookRouter
     })
 
 bookRouter
-    .route('/:id')
-    .get((req, res) => {
-        const bookmark = bookmarks.find(b => b.id == req.params.id)
-        if (!bookmark) {
-            return res.status(404).send()
-        }
-        res.json(bookmark)
+    .route('/bookmarks/:bookmark_id')
+    .get((req, res, next) => {
+        const knexInstance = req.app.get('db')
+        BookmarksService.getById(knexInstance, req.params.bookmark_id)
+            .then(bookmark => {
+                res.json(bookmark)
+            })
+            .catch(next)
     })
     .delete((req, res) => {
         bookmarks = bookmarks.filter(b => b.id !== req.params.id)

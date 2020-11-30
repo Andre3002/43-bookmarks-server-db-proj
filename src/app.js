@@ -46,7 +46,7 @@ app.use(function validateBearerToken(req, res, next) {
   next()
 })
 
-app.use("/bookmarks", bookRouter)
+app.use("/", bookRouter)
 
 app.use(function errorHandler(error, req, res, next) {
     let response
