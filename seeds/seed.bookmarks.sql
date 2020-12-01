@@ -1,5 +1,5 @@
 
-INSERT INTO bookmarks (title, url, description, rating)
+INSERT INTO bookmarks (title, url, content, rating)
 VALUES (
         'First bookmark!',
         'www.test.com',

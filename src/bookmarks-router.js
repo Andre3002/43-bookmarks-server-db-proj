@@ -22,7 +22,7 @@ bookRouter
             })
             .catch(next)
     })
-    .post(jsonParser, (req, res) => {
+    .post(jsonParser, (req, res, next) => {
         // app.use(express.json())
         const { title, content, url, rating } = req.body;
         const logger = req.app.get("logger") // how to get logger in multiple places pt2/2
@@ -75,22 +75,21 @@ bookRouter
         const id = uuid();
 
         const bookmark = {
-            id,
             title,
             content,
             url,
             rating
         };
 
-        bookmarks.push(bookmark);
-
-        logger.info(`Bookmark with id ${id} created`);
-
-        res
-            .status(201)
-            .location(`http://localhost:8000/${id}`)
-            .json(bookmark);
-
+        BookmarksService.insertBookmark(req.app.get('db'), bookmark)
+            .then(newBookmark => {
+                logger.info(`Bookmark with id ${id} created`);
+                res
+                    .status(201)
+                    .location(`http://localhost:8000/${id}`)
+                    .json(newBookmark);
+            })
+            .catch(next)
     })
 
 bookRouter
@@ -107,5 +106,6 @@ bookRouter
         bookmarks = bookmarks.filter(b => b.id !== req.params.id)
         res.status(204).send()
     })
+
 
 module.exports = bookRouter

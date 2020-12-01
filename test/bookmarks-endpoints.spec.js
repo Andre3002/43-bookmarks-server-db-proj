@@ -20,8 +20,6 @@ describe.only('Bookmarks Endpoints', function () {
 
     before('clean the table', () => db('bookmarks').truncate())
 
-    afterEach('cleanup', () => db('bookmarks').truncate())
-
     context('Given there are bookmarks in the database', () => {
         const testBookmarks = makeBookmarksArray()
 
@@ -30,6 +28,8 @@ describe.only('Bookmarks Endpoints', function () {
                 .into('bookmarks')
                 .insert(testBookmarks)
         })
+
+        afterEach('cleanup', () => db('bookmarks').truncate())
 
         it('GET /bookmarks responds with 200 and all of the articles', () => {
             return supertest(app)
@@ -46,6 +46,21 @@ describe.only('Bookmarks Endpoints', function () {
                 .get(`/bookmarks/${bookmark_Id}`)
                 .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
                 .expect(200, expectedBookmark)
+        })
+    })
+
+    describe(`POST /articles`, () => {
+        it(`creates a bookmark, responding with 201 and the new bookmark`, function () {
+            return supertest(app)
+                .post('/bookmarks')
+                .set('Authorization', `Bearer ${process.env.API_TOKEN}`)
+                .send({
+                    title: "The Odessey",
+                    content: "Greek tragedy",
+                    url: "www.test.com",
+                    rating: 4
+                })
+                .expect(201)
         })
     })
 
